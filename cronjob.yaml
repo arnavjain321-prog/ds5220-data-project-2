@@ -1,0 +1,24 @@
+# cronjob.yaml — Kubernetes CronJob that runs every 15 minutes
+# Fetches weather data, writes to DynamoDB, uploads plot + CSV to S3.
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: weather-tracking
+spec:
+  schedule: "*/15 * * * *"          # every 15 minutes
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: weather
+              image: ghcr.io/arnavjain321-prog/ds5220-weather:latest
+              env:
+                - name: S3_BUCKET
+                  value: "ds5220-weather-arnav-1775743238"
+                - name: AWS_DEFAULT_REGION
+                  value: "us-east-1"
+          restartPolicy: Never
